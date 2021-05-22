@@ -1,2 +1,1 @@
-labkey
-pandas
+apache-airflow ~= 1.10
