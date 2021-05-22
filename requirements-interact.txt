@@ -1,0 +1,2 @@
+jupyter-console
+jedi == 0.17.2
