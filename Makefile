@@ -29,4 +29,18 @@ local-test: FORCE
 	tox -e py36
 	mypy sample_module/
 
+start-postgres:
+	docker run --name airflow_dev_postgres \
+		-e POSTGRES_PASSWORD=wolf_creek -p 5432:5432 \
+		postgres:latest
+
+kill-postgres:
+	docker stop airflow_dev_postgres
+	docker rm airflow_dev_postgres
+
+start-airflow:
+	( \
+		airflow scheduler & airflow webserver; \
+	)
+
 FORCE:
