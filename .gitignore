@@ -6,4 +6,6 @@ __pycache__
 .mypy_cache
 dist
 build
-.airflow/logs
+.airflow/logs/*
+.airflow/dags/*
+.airflow/*.pid

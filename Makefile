@@ -4,6 +4,9 @@ SAMPLE_TEST = sks/pytemplate-test
 DOCKER_BUILD=docker build ./ -f Dockerfile.sample
 DOCKER_RUN=docker run
 VENV_VERSION_FOLDER := venv$(shell python --version | sed -ne 's/[^0-9]*\(\([0-9]\.\)\{0,2\}\).*/\1/p' | sed -e "s/\.//g")
+AIRFLOW_HOME:=$(shell pwd)/.airflow
+export AIRFLOW_HOME
+
 init-env:
 	python -m venv ./$(VENV_VERSION_FOLDER)
 	( \
@@ -11,21 +14,8 @@ init-env:
 		pip3 install --use-feature=2020-resolver -r requirements.txt; \
 		pip3 install --use-feature=2020-resolver -r requirements-dev.txt; \
 	)
-build: FORCE
-	${DOCKER_BUILD} --no-cache=true --target=app -t ${SAMPLE_TAG}
-
-run:
-	${DOCKER_RUN} ${SAMPLE_TAG}
-
-interact: FORCE
-	${DOCKER_BUILD} --target=interact -t ${SAMPLE_TEST}
-	${DOCKER_RUN} -it ${SAMPLE_INTERACT}
 
 test: FORCE
-	${DOCKER_BUILD} --target=test -t ${SAMPLE_INTERACT}
-	${DOCKER_RUN} -it ${SAMPLE_INTERACT}
-
-local-test: FORCE
 	tox -e py36
 	mypy sample_module/
 
@@ -38,7 +28,10 @@ kill-postgres:
 	docker stop airflow_dev_postgres
 	docker rm airflow_dev_postgres
 
-start-airflow:
+copy-dags:
+	cp dags/*.py .airflow/dags/
+
+start-airflow: copy-dags
 	( \
 		airflow scheduler & airflow webserver; \
 	)

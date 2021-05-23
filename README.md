@@ -16,5 +16,5 @@ make init-env
 to test with local config:
 
 ```bash
-export AIRFLOW_HOME=./
+AIRFLOW_HOME=$(pwd)/.airflow
 ```
